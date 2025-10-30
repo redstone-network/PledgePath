@@ -4,6 +4,7 @@ import Filters from "../../components/Filters";
 import ProjectCard from "../../components/ProjectCard";
 import type { FeedItem } from "../../lib/mockData";
 import { useStore } from "../../lib/store";
+import NavBar from "../../components/NavBar";
 
 export default function DiscoverPage() {
   const { feed, addPledge } = useStore();
@@ -43,6 +44,7 @@ export default function DiscoverPage() {
   return (
     <div className="min-h-screen bg-zinc-50 px-6 py-8 dark:bg-black">
       <div className="mx-auto max-w-5xl">
+        <NavBar />
         <header className="mb-6 flex items-center justify-between">
           <div>
             <h1 className="text-2xl font-semibold text-zinc-900 dark:text-zinc-50">Discovery Feed</h1>
