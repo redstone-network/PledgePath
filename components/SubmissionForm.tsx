@@ -1,10 +1,12 @@
 "use client";
 import React, { useState } from "react";
 import { useRouter } from "next/navigation";
-import { mockFeed, type FeedItem } from "../lib/mockData";
+import type { FeedItem } from "../lib/mockData";
+import { useStore } from "../lib/store";
 
 export default function SubmissionForm() {
   const router = useRouter();
+  const { addItem } = useStore();
   const [type, setType] = useState<"project" | "demand">("project");
   const [title, setTitle] = useState("");
   const [description, setDescription] = useState("");
@@ -53,15 +55,11 @@ export default function SubmissionForm() {
       verified: false,
       comments: [],
     };
-
-    // push into mockFeed (in-memory)
-    // Mutate module-level mock feed for prototype (in-memory).
-    // In practice the app would call an API / submit on-chain; here we push into the exported mock array.
+    // Use global client store to add item so it appears across pages
     try {
-      // eslint-disable-next-line @typescript-eslint/no-explicit-any
-      mockFeed.unshift(item as any);
+      addItem(item);
     } catch (err) {
-      console.error("Failed to append mock item", err);
+      console.error("Failed to add item to store", err);
     }
 
     // simulate wallet signing modal / tx

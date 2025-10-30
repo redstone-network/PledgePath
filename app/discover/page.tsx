@@ -2,9 +2,11 @@
 import React, { useMemo, useState } from "react";
 import Filters from "../../components/Filters";
 import ProjectCard from "../../components/ProjectCard";
-import { mockFeed, type FeedItem } from "../../lib/mockData";
+import type { FeedItem } from "../../lib/mockData";
+import { useStore } from "../../lib/store";
 
 export default function DiscoverPage() {
+  const { feed, addPledge } = useStore();
   const [search, setSearch] = useState("");
   const [category, setCategory] = useState("all");
   const [sort, setSort] = useState("newest");
@@ -13,7 +15,7 @@ export default function DiscoverPage() {
   const [pledgeAmount, setPledgeAmount] = useState<number>(1);
 
   const items = useMemo(() => {
-    let list = mockFeed.filter((f) => (tab === "projects" ? f.type === "project" : f.type === "demand"));
+    let list = feed.filter((f) => (tab === "projects" ? f.type === "project" : f.type === "demand"));
     if (category !== "all") list = list.filter((l) => l.category === category);
     if (search.trim()) {
       const q = search.toLowerCase();
@@ -23,7 +25,7 @@ export default function DiscoverPage() {
       list = list.sort((a, b) => b.totalPledge - a.totalPledge);
     }
     return list;
-  }, [search, category, sort, tab]);
+  }, [feed, search, category, sort, tab]);
 
   function handlePledge(item: FeedItem) {
     setPledgeTarget(item);
@@ -31,8 +33,9 @@ export default function DiscoverPage() {
   }
 
   function confirmPledge() {
-    // For prototype: just show a confirmation and update mock data locally
     if (!pledgeTarget) return;
+    // update store
+    addPledge(pledgeTarget.id, pledgeAmount);
     alert(`Pledged ${pledgeAmount} SOL to ${pledgeTarget.title} (mock)`);
     setPledgeTarget(null);
   }

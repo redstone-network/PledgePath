@@ -1,8 +1,9 @@
 "use client";
 import React, { useMemo } from "react";
-import type { MockUser } from "../lib/mockUser";
+import { useStore } from "../lib/store";
 
-export default function Dashboard({ user }: { user: MockUser }) {
+export default function Dashboard() {
+  const { user } = useStore();
   const totalPledged = useMemo(() => user.pledges.reduce((s, p) => s + p.amount, 0), [user.pledges]);
 
   return (

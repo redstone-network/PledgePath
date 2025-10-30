@@ -1,6 +1,7 @@
 "use client";
 import React, { useMemo, useState } from "react";
 import type { FeedItem, Comment } from "../lib/mockData";
+import { useStore } from "../lib/store";
 
 export default function ProjectDetailClient({ item }: { item: FeedItem }) {
   const [pledgeAmount, setPledgeAmount] = useState<number>(0);
@@ -8,6 +9,7 @@ export default function ProjectDetailClient({ item }: { item: FeedItem }) {
   const [localPledge, setLocalPledge] = useState<number>(0);
   const [comments, setComments] = useState<Comment[]>(item.comments ?? []);
   const [newComment, setNewComment] = useState("");
+  const { addPledge, addComment: storeAddComment } = useStore();
 
   const progress = useMemo(() => {
     if (!item.goal) return null;
@@ -18,7 +20,13 @@ export default function ProjectDetailClient({ item }: { item: FeedItem }) {
 
   function confirmPledge() {
     if (pledgeAmount <= 0) return;
-    // mock: add to local state
+    // update global store
+    try {
+      addPledge(item.id, pledgeAmount);
+    } catch (err) {
+      console.error("addPledge failed", err);
+    }
+    // local UI
     setLocalPledge((p) => p + pledgeAmount);
     setHasPledged(true);
     alert(`Mock: pledged ${pledgeAmount} SOL to ${item.title}`);
@@ -32,6 +40,11 @@ export default function ProjectDetailClient({ item }: { item: FeedItem }) {
       text: newComment.trim(),
       timestamp: "now",
     };
+    try {
+      storeAddComment(item.id, c);
+    } catch (err) {
+      console.error("addComment failed", err);
+    }
     setComments((s) => [c, ...s]);
     setNewComment("");
   }
